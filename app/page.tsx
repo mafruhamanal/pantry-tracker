@@ -1,11 +1,9 @@
 "use client";
 
 import { Container, Stack, Text, Loader } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firestore, auth } from "@/Firebase";
 import {
   doc,
