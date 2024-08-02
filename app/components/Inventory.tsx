@@ -55,9 +55,7 @@ export function Inventory({
   };
 
   const handleAddNewItem = async () => {
-    let imageURL: string | null = null; // Set imageURL to null by default
-
-    // If an image is selected, handle the upload process
+    let imageURL: string | null = null; 
     if (image) {
       try {
         const imageRef = ref(
@@ -68,20 +66,16 @@ export function Inventory({
         imageURL = await getDownloadURL(imageRef);
       } catch (error) {
         console.error("Error uploading image:", error);
-        // Optionally, handle the error here, e.g., show a message to the user
         return;
       }
     }
 
-    // Proceed to add the new item, regardless of whether an image was uploaded
     try {
       await addNewItem(itemName, quantity, imageURL);
     } catch (error) {
       console.error("Error adding new item:", error);
-      // Optionally, handle the error here, e.g., show a message to the user
     }
 
-    // Close the modal and reset the form
     close();
     setItemName("");
     setQuantity(0);

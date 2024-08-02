@@ -135,7 +135,7 @@ export default function Home() {
   const addNewItem = async (
     item: string,
     quantities: number,
-    imageURL?: string // imageURL can be undefined
+    imageURL?: string 
   ) => {
     try {
       const docRef = doc(
@@ -145,22 +145,21 @@ export default function Home() {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        // Document exists, update quantity and imageURL
+
         const docData = docSnap.data();
         await setDoc(
           docRef,
           {
-            quantity: (docData.quantity || 0) + quantities, // Use existing quantity or 0 if undefined
-            imageURL: imageURL ?? docData.imageURL, // Use new imageURL or existing one if undefined
+            quantity: (docData.quantity || 0) + quantities, 
+            imageURL: imageURL ?? docData.imageURL, 
           },
           { merge: true }
-        ); // Use merge to update only specified fields
+        ); 
       } else {
-        // Document does not exist, create new with quantity and imageURL
         await setDoc(docRef, { quantity: quantities, imageURL });
       }
 
-      await updateInventory(); // Call function to refresh inventory
+      await updateInventory(); 
     } catch (error) {
       console.error("Error adding new item:", error);
     }
