@@ -13,7 +13,7 @@ import {
   Button,
 } from "@mantine/core";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Updated import path
+import { useRouter } from "next/navigation"; 
 import { handleSignIn } from "./../serverActions/authActions";
 import classes from "./../components/Auth.module.css";
 import "./../globals.css";
@@ -30,14 +30,14 @@ export default function AuthForm() {
 
     try {
       await handleSignIn({ email, password });
-      router.push("/"); // Redirect to home page upon successful sign-in
+      router.push("/"); 
     } catch (err) {
       setError("Failed to sign in. Please try again.");
     }
   };
 
   const navigateToSignUp = () => {
-    router.push("/auth/"); // Navigate to the sign-up page
+    router.push("/auth/"); 
   };
 
   return (

@@ -13,7 +13,7 @@ import {
   Text,
 } from "@mantine/core";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Updated import path
+import { useRouter } from "next/navigation"; 
 import { handleSignUp } from "./../../serverActions/authActions";
 import classes from "./../../components/Auth.module.css";
 import "./../../globals.css";
@@ -31,7 +31,7 @@ export default function SignUp() {
 
     try {
       await handleSignUp({ email, password, username });
-      router.push("/"); // Redirect to home page upon successful sign-up
+      router.push("/"); 
     } catch (err) {
       setError("Failed to sign up. Please try again.");
     }

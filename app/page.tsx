@@ -5,6 +5,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firestore, auth } from "@/Firebase";
 import {
   doc,
@@ -24,6 +25,7 @@ import { Inventory } from "./components/Inventory";
 interface InventoryItem {
   name: string;
   quantity: number;
+  imageURL?: string;
 }
 
 export default function Home() {
@@ -31,22 +33,22 @@ export default function Home() {
   const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
     []
   );
-  const [loading, setLoading] = useState(true); // Loading state for authentication check
-  const [authenticated, setAuthenticated] = useState<boolean>(false); // Authenticated state
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState<boolean>(false);
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        router.push("/auth/create"); // Redirect to sign-up page if not authenticated
+        router.push("/auth/create");
       } else {
-        setAuthenticated(true); // Set authenticated to true
-        updateInventory(); // Update inventory if authenticated
+        setAuthenticated(true);
+        updateInventory();
       }
-      setLoading(false); // Set loading to false after check
+      setLoading(false);
     });
 
-    return () => unsubscribe(); // Cleanup subscription on unmount
+    return () => unsubscribe();
   }, [router]);
 
   const handleSearch = (query: string) => {
@@ -67,23 +69,24 @@ export default function Home() {
     const snapshot = query(
       collection(firestore, `users/${auth.currentUser?.uid}/inventory`)
     );
-    const docsRef: QuerySnapshot<DocumentData> = await getDocs(snapshot);
+    const docsRef: QuerySnapshot = await getDocs(snapshot);
     const inventoryList: InventoryItem[] = [];
     docsRef.forEach((doc) => {
       const data = doc.data();
       inventoryList.push({
         name: doc.id,
         quantity: data.quantity,
+        imageURL: data.imageURL, // Include imageURL
       });
     });
     setInventory(inventoryList);
     setFilteredInventory(inventoryList);
   };
 
-  const removeItem = async (item: string) => {
+  const removeItem = async (item: InventoryItem) => {
     const docRef = doc(
       collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
-      item
+      item.name
     );
     const docSnap = await getDoc(docRef);
 
@@ -92,17 +95,20 @@ export default function Home() {
       if (quantity === 1) {
         await deleteDoc(docRef);
       } else {
-        await setDoc(docRef, { quantity: quantity - 1 });
+        await setDoc(docRef, {
+          quantity: quantity - 1,
+          imageURL: item.imageURL,
+        });
       }
     }
 
     await updateInventory();
   };
 
-  const directRemoveItem = async (item: string) => {
+  const directRemoveItem = async (item: InventoryItem) => {
     const docRef = doc(
       collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
-      item
+      item.name
     );
     const docSnap = await getDoc(docRef);
 
@@ -113,44 +119,55 @@ export default function Home() {
     await updateInventory();
   };
 
-  const addItem = async (item: string) => {
+  const addItem = async (item: InventoryItem) => {
     const docRef = doc(
       collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
-      item
+      item.name
     );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       const { quantity } = docSnap.data();
-      await setDoc(docRef, { quantity: quantity + 1 });
+      await setDoc(docRef, { quantity: quantity + 1, imageURL: item.imageURL });
     }
 
     await updateInventory();
   };
 
-  const addNewItem = async (item: string, quantities: number) => {
-    const docRef = doc(
-      collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
-      item
-    );
-    const docSnap = await getDoc(docRef);
+  const addNewItem = async (
+    item: string,
+    quantities: number,
+    imageURL?: string
+  ) => {
+    try {
+      const docRef = doc(
+        collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
+        item
+      );
+      const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      const { quantity } = docSnap.data();
-      await setDoc(docRef, { quantity: quantity + quantities });
-    } else {
-      await setDoc(docRef, { quantity: quantities });
+      if (docSnap.exists()) {
+        const { quantity } = docSnap.data();
+        await setDoc(docRef, {
+          quantity: quantity + quantities,
+          imageURL: imageURL || docSnap.data().imageURL, // Preserve existing imageURL if not provided
+        });
+      } else {
+        await setDoc(docRef, { quantity: quantities, imageURL });
+      }
+
+      await updateInventory();
+    } catch (error) {
+      console.error("Error adding new item:", error);
     }
-
-    await updateInventory();
   };
 
   if (loading) {
-    return <Loader size="lg" />; // Show a loading spinner while checking authentication
+    return <Loader />;
   }
 
   if (!authenticated) {
-    return null; // Render nothing if not authenticated
+    return null;
   }
 
   return (

@@ -1,24 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useRouter } from "next/navigation";
 import { Container, Group, Burger, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./Header.module.css";
-import { handleSignOut } from "../serverActions/authActions"; // Import your sign-out function
+import { handleSignOut } from "../serverActions/authActions";
 
-const links = [{ link: "#", label: "Sign Out" }]; // Adjusted link for sign-out
+const links = [{ link: "#", label: "Sign Out" }];
 
 export function Header() {
   const [opened, { toggle }] = useDisclosure(false);
   const [active, setActive] = useState(links[0].link);
-  const router = useRouter(); // Initialize useRouter for navigation
+  const router = useRouter();
 
   const handleSignOutClick = async (event: React.MouseEvent) => {
     event.preventDefault();
     try {
       await handleSignOut();
-      router.push("/auth/"); // Redirect to /auth/create after sign out
+      router.push("/auth/");
     } catch (error) {
       console.error("Sign out error:", error.message);
     }
@@ -34,7 +34,7 @@ export function Header() {
       data-active={active === link.link || undefined}
       onClick={(event) => {
         if (link.label === "Sign Out") {
-          handleSignOutClick(event); // Handle sign-out click
+          handleSignOutClick(event);
         } else {
           event.preventDefault();
           setActive(link.link);

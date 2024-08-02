@@ -10,21 +10,30 @@ import {
   Modal,
   TextInput,
   NumberInput,
+  FileInput,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
+import { storage, auth } from "@/Firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "./../globals.css";
+
 interface InventoryItem {
   name: string;
   quantity: number;
+  imageURL?: string;
 }
 
 interface InventoryProps {
   inventory: InventoryItem[];
-  addItem: (item: string) => Promise<void>;
-  removeItem: (item: string) => Promise<void>;
-  directRemoveItem: (item: string) => Promise<void>;
-  addNewItem: (item: string, quantities: number) => Promise<void>;
+  addItem: (item: InventoryItem) => Promise<void>;
+  removeItem: (item: InventoryItem) => Promise<void>;
+  directRemoveItem: (item: InventoryItem) => Promise<void>;
+  addNewItem: (
+    name: string,
+    quantity: number,
+    imageURL?: string
+  ) => Promise<void>;
 }
 
 export function Inventory({
@@ -36,7 +45,33 @@ export function Inventory({
 }: InventoryProps) {
   const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState<number>(0);
+  const [image, setImage] = useState<File | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
+
+  const handleFileChange = (file: File | null) => {
+    if (file) {
+      setImage(file);
+    }
+  };
+
+  const handleAddNewItem = async () => {
+    let imageURL: string | undefined;
+    if (image) {
+      try {
+        const imageRef = ref(
+          storage,
+          `users/${auth.currentUser?.uid}/${image.name}`
+        );
+        await uploadBytes(imageRef, image);
+        imageURL = await getDownloadURL(imageRef);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        return;
+      }
+    }
+    await addNewItem(itemName, quantity, imageURL);
+    close();
+  };
 
   return (
     <>
@@ -59,6 +94,7 @@ export function Inventory({
             />
             <NumberInput
               size="md"
+              radius="lg"
               label="Quantity"
               placeholder="0"
               min={0}
@@ -67,15 +103,19 @@ export function Inventory({
                 setQuantity(typeof value === "number" ? value : 0)
               }
             />
+            <FileInput
+              size="md"
+              radius="lg"
+              label="Upload Image"
+              placeholder="Select file"
+              onChange={handleFileChange}
+            />
             <Container className="flex justify-center">
               <Button
                 color="pink"
                 variant="light"
                 mt="sm"
-                onClick={async () => {
-                  await addNewItem(itemName, quantity);
-                  close();
-                }}
+                onClick={handleAddNewItem}
               >
                 Add to Pantry
               </Button>
@@ -88,58 +128,66 @@ export function Inventory({
         </Button>
 
         {inventory.length > 0 ? (
-          inventory.map(({ name, quantity }) => (
-            <Stack key={name} justify="center" h={120} align="center">
-              <Card
-                key={name}
-                className="rounded-lg p-4 mt-4"
-                padding="lg"
-                radius="md"
-                withBorder
-                style={{ width: "600px", height: "auto" }}
-              >
-                <Group align="center" style={{ height: "100%" }}>
-                  <Group
+          inventory.map((item) => (
+            <Card
+              key={item.name}
+              className="rounded-lg p-4 mt-4"
+              padding="lg"
+              radius="md"
+              withBorder
+              style={{ width: "800px", height: "auto" }}
+            >
+              <Group align="center" style={{ height: "100%" }}>
+                {item.imageURL && (
+                  <img
+                    src={item.imageURL}
+                    alt={item.name}
                     style={{
-                      flexGrow: 1,
-                      justifyContent: "center",
-                      textAlign: "center",
+                      width: 100,
+                      height: 100,
+                      objectFit: "cover",
+                      marginRight: 10,
                     }}
+                    className="rounded"
+                  />
+                )}
+                <Group
+                  style={{ flexGrow: 1, justifyContent: "space-between" }}
+                  className="px-12"
+                >
+                  <Text
+                    className="flex-grow text-center truncate"
+                    style={{ wordBreak: "break-word", marginRight: 10 }}
                   >
-                    <Text
-                      className="flex-grow text-center truncate"
-                      style={{ wordBreak: "break-word" }}
-                    >
-                      {name}
-                    </Text>
-                    <Text ta="center" className="px-6">{`${quantity}`}</Text>
-                  </Group>
-                  <Group style={{ marginTop: "auto" }}>
-                    <Button
-                      color="green"
-                      variant="light"
-                      onClick={() => addItem(name)}
-                    >
-                      +
-                    </Button>
-                    <Button
-                      color="orange"
-                      variant="light"
-                      onClick={() => removeItem(name)}
-                    >
-                      -
-                    </Button>
-                    <Button
-                      color="red"
-                      variant="light"
-                      onClick={() => directRemoveItem(name)}
-                    >
-                      Remove
-                    </Button>
-                  </Group>
+                    {item.name}
+                  </Text>
+                  <Text>{item.quantity}</Text>
                 </Group>
-              </Card>
-            </Stack>
+                <Group>
+                  <Button
+                    color="green"
+                    variant="light"
+                    onClick={() => addItem(item)}
+                  >
+                    +
+                  </Button>
+                  <Button
+                    color="orange"
+                    variant="light"
+                    onClick={() => removeItem(item)}
+                  >
+                    -
+                  </Button>
+                  <Button
+                    color="red"
+                    variant="light"
+                    onClick={() => directRemoveItem(item)}
+                  >
+                    Remove
+                  </Button>
+                </Group>
+              </Group>
+            </Card>
           ))
         ) : (
           <Text className="text-neutral-400">
