@@ -3,7 +3,7 @@ import { Container, Stack, Button, Text, Group, Card, Image, Badge, Title } from
 import { useState, useEffect } from 'react';
 import {firestore} from '@/Firebase';
 import { doc, collection, DocumentData, getDocs,getDoc, query, QuerySnapshot, deleteDoc, setDoc } from 'firebase/firestore';
-import { Header } from './Header';
+import { Header } from './components/Header';
 import './globals.css';
 
 interface inventory {
