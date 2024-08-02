@@ -13,8 +13,6 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
-import { firestore } from "@/Firebase";
-import { doc, collection, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 
 interface InventoryItem {
   name: string;
@@ -29,7 +27,7 @@ interface InventoryProps {
   addNewItem: (item: string, quantities: number) => Promise<void>;
 }
 
-export default function Inventory({
+export function Inventory({
   inventory,
   addItem,
   removeItem,

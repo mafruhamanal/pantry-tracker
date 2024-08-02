@@ -1,5 +1,4 @@
 "use client";
-
 import { Container, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from "react";
@@ -7,7 +6,6 @@ import { firestore } from "@/Firebase";
 import {
   doc,
   collection,
-  DocumentData,
   getDocs,
   getDoc,
   query,
@@ -18,7 +16,8 @@ import {
 import { Header } from "./components/Header";
 import "./globals.css";
 import { SearchForm } from "./components/SearchForm";
-import Inventory from "./components/Inventory";
+import { Inventory } from "./components/Inventory";
+import { auth } from "../Firebase";
 
 interface InventoryItem {
   name: string;
@@ -47,7 +46,9 @@ export default function Home() {
   };
 
   const updateInventory = async () => {
-    const snapshot = query(collection(firestore, "pantry"));
+    const snapshot = query(
+      collection(firestore, `users/${auth.currentUser?.uid}/inventory`)
+    );
     const docsRef: QuerySnapshot<DocumentData> = await getDocs(snapshot);
     const inventoryList: InventoryItem[] = [];
     docsRef.forEach((doc) => {
@@ -62,7 +63,10 @@ export default function Home() {
   };
 
   const removeItem = async (item: string) => {
-    const docRef = doc(collection(firestore, "pantry"), item);
+    const docRef = doc(
+      collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
+      item
+    );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -78,7 +82,10 @@ export default function Home() {
   };
 
   const directRemoveItem = async (item: string) => {
-    const docRef = doc(collection(firestore, "pantry"), item);
+    const docRef = doc(
+      collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
+      item
+    );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -89,7 +96,10 @@ export default function Home() {
   };
 
   const addItem = async (item: string) => {
-    const docRef = doc(collection(firestore, "pantry"), item);
+    const docRef = doc(
+      collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
+      item
+    );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -101,7 +111,10 @@ export default function Home() {
   };
 
   const addNewItem = async (item: string, quantities: number) => {
-    const docRef = doc(collection(firestore, "pantry"), item);
+    const docRef = doc(
+      collection(firestore, `users/${auth.currentUser?.uid}/inventory`),
+      item
+    );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
