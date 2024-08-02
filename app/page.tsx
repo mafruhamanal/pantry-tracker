@@ -17,6 +17,7 @@ export default function Home() {
 
   const [inventory,setInventory] = useState<inventory[]>([]);
   const [itemName, setItemName] = useState('');
+  const [quantity, setQuantity] = useState<number>(0);
   const [opened, { open, close }] = useDisclosure(false);
 
   const demoProps = {
@@ -56,16 +57,38 @@ export default function Home() {
     await updateInventory();
   }
 
-  const addItem = async (item: string) => {
+  const directRemoveItem = async (item:string) => {
+    const docRef = doc(collection(firestore,"pantry"), item);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      await deleteDoc(docRef);
+    }
+
+    await updateInventory();
+  }
+
+  const addItem = async (item:string) => {
+    const docRef = doc(collection(firestore,"pantry"), item);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const { quantity } = docSnap.data();
+      await setDoc(docRef, {quantity: quantity +1});
+    }
+
+    await updateInventory();
+  }
+  const addNewItem = async (item: string, quantities: number) => {
     const docRef = doc(collection(firestore,"pantry"), item);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       const  { quantity } = docSnap.data();
-      await setDoc(docRef, {quantity: quantity + 1});
+      await setDoc(docRef, {quantity: quantity + quantities});
     }
     else {
-      await setDoc(docRef, {quantity: 1});
+      await setDoc(docRef, {quantity: quantities});
     }
 
     await updateInventory();
@@ -87,6 +110,8 @@ export default function Home() {
       label="Item Name"
       placeholder="Apple"
       className='py-4'
+      value={itemName}
+      onChange={ (event) => setItemName(event.currentTarget.value)}
     />
      <NumberInput
      size="md"
@@ -94,6 +119,8 @@ export default function Home() {
       placeholder="0"
       min={0}
       className='py-4'
+      value={quantity}
+      onChange={setQuantity}
     />
     <Container className="flex justify-center">
     <Button
@@ -102,6 +129,10 @@ export default function Home() {
       variant="light"
       mt="sm"
       className='self-auto'
+      onClick={async () => {
+        await addNewItem(itemName,quantity); 
+        close
+      }}
     >
       Add to Pantry
     </Button>
@@ -132,13 +163,13 @@ export default function Home() {
            <Text ta="center" className='px-6'>{quantity}</Text>
          </Group>
          <Group style={{ marginTop: 'auto' }}>
-           <Button component="a" color="green" variant="light">
+           <Button component="a" color="green" variant="light" onClick={() => addItem(name)}>
              +
            </Button>
-           <Button component="a" color="orange" variant="light">
+           <Button component="a" color="orange" variant="light" onClick={() => removeItem(name)} >
              -
            </Button>
-           <Button component="a" color="red" variant="light">
+           <Button component="a" color="red" variant="light" onClick={() => directRemoveItem(name)}>
              Remove
            </Button>
          </Group>
