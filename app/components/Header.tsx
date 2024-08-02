@@ -29,9 +29,8 @@ export function Header() {
   return (
     <header className={classes.header}>
       <Container size="md" className={classes.inner}>
-      <Text>Pantry Tracker App</Text>
+      <Text fw={600}>Pantry Tracker App</Text>
         <Group gap={5} visibleFrom="xs">
-            
           {items}
         </Group>
 

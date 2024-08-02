@@ -120,7 +120,7 @@ export default function Home() {
       min={0}
       className='py-4'
       value={quantity}
-      onChange={setQuantity}
+      onChange={(value: number | string) => setQuantity(typeof value === 'number' ? value : 0)}
     />
     <Container className="flex justify-center">
     <Button
