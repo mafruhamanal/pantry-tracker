@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
-
+import "./../globals.css";
 interface InventoryItem {
   name: string;
   quantity: number;
@@ -142,7 +142,9 @@ export function Inventory({
             </Stack>
           ))
         ) : (
-          <Text>No items found in the inventory.</Text>
+          <Text className="text-neutral-400">
+            Add an Item to Start Tracking 🍃
+          </Text>
         )}
       </Stack>
     </>

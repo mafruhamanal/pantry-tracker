@@ -1,5 +1,6 @@
 import { Container } from "@mantine/core";
 import { useState, useEffect } from "react";
+import "./../globals.css";
 
 export function SearchForm({
   onSearch,
@@ -14,7 +15,7 @@ export function SearchForm({
   };
 
   return (
-    <Container  mt="md">
+    <Container mt="md">
       <form
         onSubmit={handleSubmit}
         role="search"
@@ -47,7 +48,7 @@ export function SearchForm({
           <input
             id="search-box"
             type="text"
-            className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-green-700 focus:border-green-700"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />

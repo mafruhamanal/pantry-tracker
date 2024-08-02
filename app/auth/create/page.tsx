@@ -5,6 +5,7 @@ import {
   PasswordInput,
   Checkbox,
   Paper,
+  Anchor,
   Title,
   Container,
   Group,
@@ -38,10 +39,15 @@ export default function SignUp() {
 
   return (
     <Container size={420} my={200}>
-      <Text className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-2xl text-center font-bold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-4xl">
+      <Text className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-2xl text-center font-bold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl">
         Let's Get You Started!
       </Text>
-
+      <Text c="dimmed" size="sm" ta="center" mt={5}>
+        Already have an account?{" "}
+        <Anchor size="sm" href="/auth/" className="text-green-500">
+          Sign In
+        </Anchor>
+      </Text>
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
         <form onSubmit={handleSubmit}>
           <TextInput
@@ -74,7 +80,13 @@ export default function SignUp() {
           <Group justify="space-between" mt="lg">
             <Checkbox label="Remember me" />
           </Group>
-          <Button fullWidth mt="xl" type="submit">
+          <Button
+            fullWidth
+            mt="xl"
+            type="submit"
+            variant="gradient"
+            gradient={{ from: "lime", to: "teal", deg: 90 }}
+          >
             Sign up
           </Button>
         </form>

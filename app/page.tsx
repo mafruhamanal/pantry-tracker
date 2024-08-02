@@ -1,8 +1,11 @@
 "use client";
-import { Container, Stack, Text } from "@mantine/core";
+
+import { Container, Stack, Text, Loader } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState, useEffect } from "react";
-import { firestore } from "@/Firebase";
+import { useRouter } from "next/navigation";
+import { onAuthStateChanged } from "firebase/auth";
+import { firestore, auth } from "@/Firebase";
 import {
   doc,
   collection,
@@ -17,7 +20,6 @@ import { Header } from "./components/Header";
 import "./globals.css";
 import { SearchForm } from "./components/SearchForm";
 import { Inventory } from "./components/Inventory";
-import { auth } from "../Firebase";
 
 interface InventoryItem {
   name: string;
@@ -29,9 +31,23 @@ export default function Home() {
   const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
     []
   );
-  const [itemName, setItemName] = useState("");
-  const [quantity, setQuantity] = useState<number>(0);
-  const [opened, { open, close }] = useDisclosure(false);
+  const [loading, setLoading] = useState(true); // Loading state for authentication check
+  const [authenticated, setAuthenticated] = useState<boolean>(false); // Authenticated state
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/auth/create"); // Redirect to sign-up page if not authenticated
+      } else {
+        setAuthenticated(true); // Set authenticated to true
+        updateInventory(); // Update inventory if authenticated
+      }
+      setLoading(false); // Set loading to false after check
+    });
+
+    return () => unsubscribe(); // Cleanup subscription on unmount
+  }, [router]);
 
   const handleSearch = (query: string) => {
     if (query.trim() === "") {
@@ -46,6 +62,8 @@ export default function Home() {
   };
 
   const updateInventory = async () => {
+    if (!auth.currentUser) return;
+
     const snapshot = query(
       collection(firestore, `users/${auth.currentUser?.uid}/inventory`)
     );
@@ -127,9 +145,13 @@ export default function Home() {
     await updateInventory();
   };
 
-  useEffect(() => {
-    updateInventory();
-  }, []);
+  if (loading) {
+    return <Loader size="lg" />; // Show a loading spinner while checking authentication
+  }
+
+  if (!authenticated) {
+    return null; // Render nothing if not authenticated
+  }
 
   return (
     <>
