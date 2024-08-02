@@ -50,7 +50,7 @@ export function Header() {
       <Container size="md" className={classes.inner}>
         <Text
           fw={600}
-          className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-emerald-400 text-4xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-xl lg:text-2xl"
+          className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-emerald-400 text-xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-xl lg:text-2xl"
         >
           Pantry Tracker App
         </Text>

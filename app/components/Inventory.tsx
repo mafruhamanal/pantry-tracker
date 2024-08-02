@@ -55,7 +55,9 @@ export function Inventory({
   };
 
   const handleAddNewItem = async () => {
-    let imageURL: string | undefined;
+    let imageURL: string | null = null; // Set imageURL to null by default
+
+    // If an image is selected, handle the upload process
     if (image) {
       try {
         const imageRef = ref(
@@ -66,11 +68,24 @@ export function Inventory({
         imageURL = await getDownloadURL(imageRef);
       } catch (error) {
         console.error("Error uploading image:", error);
+        // Optionally, handle the error here, e.g., show a message to the user
         return;
       }
     }
-    await addNewItem(itemName, quantity, imageURL);
+
+    // Proceed to add the new item, regardless of whether an image was uploaded
+    try {
+      await addNewItem(itemName, quantity, imageURL);
+    } catch (error) {
+      console.error("Error adding new item:", error);
+      // Optionally, handle the error here, e.g., show a message to the user
+    }
+
+    // Close the modal and reset the form
     close();
+    setItemName("");
+    setQuantity(0);
+    setImage(null);
   };
 
   return (
@@ -131,39 +146,32 @@ export function Inventory({
           inventory.map((item) => (
             <Card
               key={item.name}
-              className="rounded-lg p-4 mt-4"
-              padding="lg"
+              className="rounded-lg p-4 mt-4 w-full max-w-400"
+              padding="xl"
               radius="md"
               withBorder
-              style={{ width: "800px", height: "auto" }}
+              style={{ width: "400px" }}
             >
-              <Group align="center" style={{ height: "100%" }}>
+              <Group align="center" className="w-full">
                 {item.imageURL && (
                   <img
                     src={item.imageURL}
                     alt={item.name}
-                    style={{
-                      width: 100,
-                      height: 100,
-                      objectFit: "cover",
-                      marginRight: 10,
-                    }}
-                    className="rounded"
+                    className="w-24 h-24 object-cover rounded mr-4"
                   />
                 )}
-                <Group
-                  style={{ flexGrow: 1, justifyContent: "space-between" }}
-                  className="px-12"
-                >
+                <Group className="flex-grow justify-between px-4">
                   <Text
-                    className="flex-grow text-center truncate"
-                    style={{ wordBreak: "break-word", marginRight: 10 }}
+                    className="flex-grow text-center truncate mr-2"
+                    style={{ wordBreak: "break-word" }}
                   >
                     {item.name}
                   </Text>
                   <Text>{item.quantity}</Text>
                 </Group>
-                <Group>
+              </Group>
+              <Container className="flex justify-center mt-4">
+                <Group className="space-x-2">
                   <Button
                     color="green"
                     variant="light"
@@ -186,7 +194,7 @@ export function Inventory({
                     Remove
                   </Button>
                 </Group>
-              </Group>
+              </Container>
             </Card>
           ))
         ) : (

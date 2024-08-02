@@ -15,12 +15,8 @@ export function SearchForm({
   };
 
   return (
-    <Container mt="md" style={{ width: "600px" }}>
-      <form
-        onSubmit={handleSubmit}
-        role="search"
-        className="w-full max-w-lg mx-auto"
-      >
+    <Container mt="md" className="w-full max-w-lg mx-auto px-4">
+      <form onSubmit={handleSubmit} role="search" className="w-full">
         <label
           htmlFor="search-box"
           className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
@@ -28,7 +24,7 @@ export function SearchForm({
           Search:
         </label>
         <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
               className="w-4 h-4 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
@@ -48,13 +44,13 @@ export function SearchForm({
           <input
             id="search-box"
             type="text"
-            className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-green-700 focus:border-green-700"
+            className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-green-700 focus:border-green-700"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           <button
             type="submit"
-            className="text-white absolute end-2.5 bottom-2.5 bg-emerald-500 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2"
+            className="text-white absolute right-2.5 bottom-2.5 bg-emerald-500 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2"
           >
             Search
           </button>
