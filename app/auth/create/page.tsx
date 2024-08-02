@@ -13,7 +13,7 @@ import {
   Text,
 } from "@mantine/core";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { handleSignUp } from "./../../serverActions/authActions";
 import classes from "./../../components/Auth.module.css";
 import "./../../globals.css";
@@ -31,7 +31,7 @@ export default function SignUp() {
 
     try {
       await handleSignUp({ email, password, username });
-      router.push("/"); 
+      router.push("/");
     } catch (err) {
       setError("Failed to sign up. Please try again.");
     }
@@ -52,14 +52,14 @@ export default function SignUp() {
         <form onSubmit={handleSubmit}>
           <TextInput
             label="Username"
-            placeholder="John Doe"
+            placeholder="Your Name"
             required
             value={username}
             onChange={(e) => setUsername(e.currentTarget.value)}
           />
           <TextInput
             label="Email"
-            placeholder="you@mantine.dev"
+            placeholder="name@email.com"
             required
             value={email}
             onChange={(e) => setEmail(e.currentTarget.value)}

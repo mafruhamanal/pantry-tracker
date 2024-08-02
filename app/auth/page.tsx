@@ -56,7 +56,7 @@ export default function AuthForm() {
         <form onSubmit={handleSubmit}>
           <TextInput
             label="Email"
-            placeholder="you@mantine.dev"
+            placeholder="name@email.com"
             required
             value={email}
             onChange={(e) => setEmail(e.currentTarget.value)}

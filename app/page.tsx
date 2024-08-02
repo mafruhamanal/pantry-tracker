@@ -172,7 +172,7 @@ export default function Home() {
     <>
       <Header />
       <Container mt="md">
-        <Stack justify="center" align="center" className="py-12">
+        <Stack justify="center" align="center" className="py-4">
           <Text className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-4xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
             Pantry Tracker
           </Text>

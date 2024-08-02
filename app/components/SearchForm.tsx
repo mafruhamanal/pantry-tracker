@@ -15,7 +15,7 @@ export function SearchForm({
   };
 
   return (
-    <Container mt="md">
+    <Container mt="md" style={{ width: "600px" }}>
       <form
         onSubmit={handleSubmit}
         role="search"
