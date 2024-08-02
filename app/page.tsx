@@ -1,5 +1,7 @@
 'use client';
-import { Container, Stack, Button, Text, Group, Card, Image, Badge, Title } from '@mantine/core';
+
+import { Container, Stack, Button, Text, Group, Card, Image, Modal, Title, TextInput, NumberInput } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { useState, useEffect } from 'react';
 import {firestore} from '@/Firebase';
 import { doc, collection, DocumentData, getDocs,getDoc, query, QuerySnapshot, deleteDoc, setDoc } from 'firebase/firestore';
@@ -14,8 +16,8 @@ interface inventory {
 export default function Home() {
 
   const [inventory,setInventory] = useState<inventory[]>([]);
-  const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
+  const [opened, { open, close }] = useDisclosure(false);
 
   const demoProps = {
     bg: 'var(--mantine-color-blue-light)',
@@ -72,97 +74,79 @@ export default function Home() {
     updateInventory();
   }, []);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
   return (
     <>
     <Header/>
-    <Text className='text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-4xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl'>
-        Pantry Tracker</Text>
-    { inventory.forEach(({name, quantity}) => {console.log(quantity)})}
-   <Stack justify="center" h={200} align='center'>
-    <Group gap="xs" h={500}  align="center"  bg="var(--mantine-color-body)" justify="center">
-      <Card className="rounded-lg p-4 mt-4"
-    padding="lg"
-    radius="md"
-    withBorder
-    style={{ flex: 1 }} >
-      <Group gap="xl" h={100}  align="center"  bg="var(--mantine-color-body)" justify="center">
-      <Text>Item Name</Text>
-      <Text>Quantity: 1</Text>
-      <Button
-      component="a"
-      href={`/reading/test-reading`}
-      color="green"
-      variant="light"
-      mt="sm"
-    >
-      Add
-    </Button>
-    <Button
-      component="a"
-      href={`/reading/test-reading`}
-      color="green"
-      variant="light"
-      mt="sm"
-    >
-      Remove
-    </Button>
-    <Button
-      component="a"
-      href={`/reading/test-reading`}
-      color="green"
-      variant="light"
-      mt="sm"
-    >
-      Delete
-    </Button>
-    </Group>
-    </Card>
-    </Group>
-    </Stack> 
     <Stack justify="center" h={200} align='center'>
-    <Group gap="xs" h={500}  align="center"  bg="var(--mantine-color-body)" justify="center">
-      <Card className=" rounded-lg p-4 mt-4"
-    padding="lg"
-    radius="md"
-    withBorder
-    style={{ flex: 1 }} >
-      <Group gap="xl" h={100}  align="center"  bg="var(--mantine-color-body)" justify="center">
-      <Text>Item Name</Text>
-      <Text>Quantity: 1</Text>
+    <Text className=' text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-4xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl'>
+        Pantry Tracker</Text>
+        <Modal opened={opened} onClose={close} title="Add an Item" centered size="md">
+      <TextInput
+      size="md"
+      radius="lg"
+      label="Item Name"
+      placeholder="Apple"
+      className='py-4'
+    />
+     <NumberInput
+     size="md"
+      label="Quantity"
+      placeholder="0"
+      min={0}
+      className='py-4'
+    />
+    <Container className="flex justify-center">
+    <Button
+      component="a"
+      color="pink"
+      variant="light"
+      mt="sm"
+      className='self-auto'
+    >
+      Add to Pantry
+    </Button>
+    </Container>
+      </Modal>
       <Button
       component="a"
-      href={`/reading/test-reading`}
       color="green"
       variant="light"
       mt="sm"
+      onClick={open}
+      justify="center"
     >
-      Add
+      Add a New Item
     </Button>
-    <Button
-      component="a"
-      href={`/reading/test-reading`}
-      color="green"
-      variant="light"
-      mt="sm"
-    >
-      Remove
-    </Button>
-    <Button
-      component="a"
-      href={`/reading/test-reading`}
-      color="green"
-      variant="light"
-      mt="sm"
-    >
-      Delete
-    </Button>
-    </Group>
-    </Card>
-    </Group>
-    </Stack> 
+    </Stack>
+    { inventory.map(({name, quantity}) => (
+   <Stack key={name} justify="center" h={120} align='center'>
+   <Group gap="xs" h={500} align="center" bg="var(--mantine-color-body)" justify="center">
+     <Card className="rounded-lg p-4 mt-4"
+           padding="lg"
+           radius="md"
+           withBorder
+           style={{ width: '500px', height: 'auto' }} >
+       <Group align="center" style={{ height: '100%' }}>
+         <Group style={{ flexGrow: 1, justifyContent: 'center', textAlign: 'center' }}>
+           <Text ta="center" className='px-6'>{name}</Text>
+           <Text ta="center" className='px-6'>{quantity}</Text>
+         </Group>
+         <Group style={{ marginTop: 'auto' }}>
+           <Button component="a" color="green" variant="light">
+             +
+           </Button>
+           <Button component="a" color="orange" variant="light">
+             -
+           </Button>
+           <Button component="a" color="red" variant="light">
+             Remove
+           </Button>
+         </Group>
+       </Group>
+     </Card>
+   </Group>
+ </Stack>
+    ))}
     </>
   );
 }
