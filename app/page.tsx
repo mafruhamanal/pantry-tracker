@@ -1,38 +1,55 @@
-'use client';
+"use client";
 
-import { Container, Stack, Button, Text, Group, Card, Image, Modal, TextInput, NumberInput } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { useState, useEffect } from 'react';
-import { firestore } from '@/Firebase';
-import { doc, collection, DocumentData, getDocs, getDoc, query, QuerySnapshot, deleteDoc, setDoc } from 'firebase/firestore';
-import { Header } from './components/Header';
-import './globals.css';
-import { SearchForm } from './components/SearchForm';
+import { Container, Stack, Text } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { useState, useEffect } from "react";
+import { firestore } from "@/Firebase";
+import {
+  doc,
+  collection,
+  DocumentData,
+  getDocs,
+  getDoc,
+  query,
+  QuerySnapshot,
+  deleteDoc,
+  setDoc,
+} from "firebase/firestore";
+import { Header } from "./components/Header";
+import "./globals.css";
+import { SearchForm } from "./components/SearchForm";
+import Inventory from "./components/Inventory";
 
-interface inventory {
-  name: string,
-  quantity: number
+interface InventoryItem {
+  name: string;
+  quantity: number;
 }
 
 export default function Home() {
-  const [inventory, setInventory] = useState<inventory[]>([]);
-  const [filteredInventory, setFilteredInventory] = useState<inventory[]>([]);
-  const [itemName, setItemName] = useState('');
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
+    []
+  );
+  const [itemName, setItemName] = useState("");
   const [quantity, setQuantity] = useState<number>(0);
   const [opened, { open, close }] = useDisclosure(false);
 
   const handleSearch = (query: string) => {
-    if (query.trim() === '') {
+    if (query.trim() === "") {
       setFilteredInventory(inventory);
     } else {
-      setFilteredInventory(inventory.filter(item => item.name.toLowerCase().includes(query.toLowerCase())));
+      setFilteredInventory(
+        inventory.filter((item) =>
+          item.name.toLowerCase().includes(query.toLowerCase())
+        )
+      );
     }
-  }
+  };
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, "pantry"));
     const docsRef: QuerySnapshot<DocumentData> = await getDocs(snapshot);
-    const inventoryList: inventory[] = [];
+    const inventoryList: InventoryItem[] = [];
     docsRef.forEach((doc) => {
       const data = doc.data();
       inventoryList.push({
@@ -52,14 +69,13 @@ export default function Home() {
       const { quantity } = docSnap.data();
       if (quantity === 1) {
         await deleteDoc(docRef);
-      }
-      else {
+      } else {
         await setDoc(docRef, { quantity: quantity - 1 });
       }
     }
 
     await updateInventory();
-  }
+  };
 
   const directRemoveItem = async (item: string) => {
     const docRef = doc(collection(firestore, "pantry"), item);
@@ -70,7 +86,7 @@ export default function Home() {
     }
 
     await updateInventory();
-  }
+  };
 
   const addItem = async (item: string) => {
     const docRef = doc(collection(firestore, "pantry"), item);
@@ -82,7 +98,8 @@ export default function Home() {
     }
 
     await updateInventory();
-  }
+  };
+
   const addNewItem = async (item: string, quantities: number) => {
     const docRef = doc(collection(firestore, "pantry"), item);
     const docSnap = await getDoc(docRef);
@@ -90,13 +107,12 @@ export default function Home() {
     if (docSnap.exists()) {
       const { quantity } = docSnap.data();
       await setDoc(docRef, { quantity: quantity + quantities });
-    }
-    else {
+    } else {
       await setDoc(docRef, { quantity: quantities });
     }
 
     await updateInventory();
-  }
+  };
 
   useEffect(() => {
     updateInventory();
@@ -105,86 +121,21 @@ export default function Home() {
   return (
     <>
       <Header />
-      <Stack justify="center" h={200} align='center'>
-        <Text className=' text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-4xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl'>
-          Pantry Tracker</Text>
-        <SearchForm onSearch={handleSearch} />
-        <Modal opened={opened} onClose={close} title="Add an Item" centered size="md">
-          <TextInput
-            size="md"
-            radius="lg"
-            label="Item Name"
-            placeholder="Apple"
-            className='py-4'
-            value={itemName}
-            onChange={(event) => setItemName(event.currentTarget.value)}
+      <Container mt="md">
+        <Stack justify="center" align="center" className="py-12">
+          <Text className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-4xl text-center font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
+            Pantry Tracker
+          </Text>
+          <SearchForm onSearch={handleSearch} />
+          <Inventory
+            inventory={filteredInventory}
+            addItem={addItem}
+            removeItem={removeItem}
+            directRemoveItem={directRemoveItem}
+            addNewItem={addNewItem}
           />
-          <NumberInput
-            size="md"
-            label="Quantity"
-            placeholder="0"
-            min={0}
-            className='py-4'
-            value={quantity}
-            onChange={(value: number | string) => setQuantity(typeof value === 'number' ? value : 0)}
-          />
-          <Container className="flex justify-center">
-            <Button
-              component="a"
-              color="pink"
-              variant="light"
-              mt="sm"
-              className='self-auto'
-              onClick={async () => {
-                await addNewItem(itemName, quantity);
-                close();
-              }}
-            >
-              Add to Pantry
-            </Button>
-          </Container>
-        </Modal>
-        <Button
-          component="a"
-          color="green"
-          variant="light"
-          mt="sm"
-          onClick={open}
-          justify="center"
-          className='flex flex-wrap px-12'
-        >
-          Add a New Item
-        </Button>
-      </Stack>
-      {filteredInventory.map(({ name, quantity }) => (
-        <Stack key={name} justify="center" h={120} align='center'>
-          <Group gap="xs" h={500} align="center" bg="var(--mantine-color-body)" justify="center">
-            <Card className="rounded-lg p-4 mt-4"
-              padding="lg"
-              radius="md"
-              withBorder
-              style={{ width: '500px', height: 'auto' }} >
-              <Group align="center" style={{ height: '100%' }}>
-                <Group style={{ flexGrow: 1, justifyContent: 'center', textAlign: 'center' }}>
-                  <Text ta="center" className='px-6'>{name}</Text>
-                  <Text ta="center" className='px-6'>{quantity}</Text>
-                </Group>
-                <Group style={{ marginTop: 'auto' }}>
-                  <Button component="a" color="green" variant="light" onClick={() => addItem(name)}>
-                    +
-                  </Button>
-                  <Button component="a" color="orange" variant="light" onClick={() => removeItem(name)} >
-                    -
-                  </Button>
-                  <Button component="a" color="red" variant="light" onClick={() => directRemoveItem(name)}>
-                    Remove
-                  </Button>
-                </Group>
-              </Group>
-            </Card>
-          </Group>
         </Stack>
-      ))}
+      </Container>
     </>
   );
 }
