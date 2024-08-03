@@ -135,7 +135,7 @@ export default function Home() {
   const addNewItem = async (
     item: string,
     quantities: number,
-    imageURL?: string 
+    imageURL?: string
   ) => {
     try {
       const docRef = doc(
@@ -145,28 +145,31 @@ export default function Home() {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-
         const docData = docSnap.data();
         await setDoc(
           docRef,
           {
-            quantity: (docData.quantity || 0) + quantities, 
-            imageURL: imageURL ?? docData.imageURL, 
+            quantity: (docData.quantity || 0) + quantities,
+            imageURL: imageURL ?? docData.imageURL,
           },
           { merge: true }
-        ); 
+        );
       } else {
         await setDoc(docRef, { quantity: quantities, imageURL });
       }
 
-      await updateInventory(); 
+      await updateInventory();
     } catch (error) {
       console.error("Error adding new item:", error);
     }
   };
 
   if (loading) {
-    return <Loader />;
+    return (
+      <div className="loader-container">
+        <Loader />
+      </div>
+    );
   }
 
   if (!authenticated) {

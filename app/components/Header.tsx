@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Container, Group, Burger, Text } from "@mantine/core";
+import {
+  Container,
+  Group,
+  Burger,
+  Text,
+  Paper,
+  Transition,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./Header.module.css";
 import { handleSignOut } from "../serverActions/authActions";
@@ -58,6 +65,13 @@ export function Header() {
           {items}
         </Group>
         <Burger opened={opened} onClick={toggle} hiddenFrom="xs" size="sm" />
+        <Transition transition="fade-left" duration={200} mounted={opened}>
+          {(styles) => (
+            <Paper className={classes.burgerMenu} style={styles} withBorder>
+              {items}
+            </Paper>
+          )}
+        </Transition>
       </Container>
     </header>
   );
