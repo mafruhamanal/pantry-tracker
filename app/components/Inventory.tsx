@@ -17,6 +17,7 @@ import { useState } from "react";
 import { storage, auth } from "@/Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "./../globals.css";
+import Image from "next/image";
 
 interface InventoryItem {
   name: string;
@@ -55,7 +56,7 @@ export function Inventory({
   };
 
   const handleAddNewItem = async () => {
-    let imageURL: string | null = null; 
+    let imageURL: string | null = null;
     if (image) {
       try {
         const imageRef = ref(
@@ -148,7 +149,7 @@ export function Inventory({
             >
               <Group align="center" className="w-full">
                 {item.imageURL && (
-                  <img
+                  <Image
                     src={item.imageURL}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded mr-4"
