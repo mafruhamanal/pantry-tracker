@@ -165,11 +165,7 @@ export default function Home() {
   };
 
   if (loading) {
-    return (
-      <div className="loader-container">
-        <Loader />
-      </div>
-    );
+    return <div className="loader-container"></div>;
   }
 
   if (!authenticated) {

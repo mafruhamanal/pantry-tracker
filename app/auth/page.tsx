@@ -13,9 +13,8 @@ import {
   Button,
 } from "@mantine/core";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import { handleSignIn } from "./../serverActions/authActions";
-import classes from "./../components/Auth.module.css";
 import "./../globals.css";
 
 export default function AuthForm() {
@@ -30,14 +29,14 @@ export default function AuthForm() {
 
     try {
       await handleSignIn({ email, password });
-      router.push("/"); 
+      router.push("/");
     } catch (err) {
       setError("Failed to sign in. Please try again.");
     }
   };
 
   const navigateToSignUp = () => {
-    router.push("/auth/"); 
+    router.push("/auth/");
   };
 
   return (
@@ -47,7 +46,7 @@ export default function AuthForm() {
       </Text>
       <Text c="dimmed" size="sm" ta="center" mt={5}>
         Do not have an account yet?{" "}
-        <Anchor size="sm" href="/auth/create/">
+        <Anchor size="sm" href="/auth/create/" className="text-green-500">
           Create account
         </Anchor>
       </Text>
