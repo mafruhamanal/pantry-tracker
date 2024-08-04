@@ -27,7 +27,11 @@ export function Header() {
       await handleSignOut();
       router.push("/auth/");
     } catch (error) {
-      console.error("Sign out error:", error.message);
+      if (error instanceof Error) {
+        console.error("Sign out error:", error.message);
+      } else {
+        console.error("Sign out error:", error);
+      }
     }
   };
 
