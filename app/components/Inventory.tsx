@@ -72,7 +72,7 @@ export function Inventory({
     }
 
     try {
-      await addNewItem(itemName, quantity, imageURL);
+      await addNewItem(itemName, quantity, imageURL ?? undefined);
     } catch (error) {
       console.error("Error adding new item:", error);
     }
