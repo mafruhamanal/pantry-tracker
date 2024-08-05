@@ -11,13 +11,13 @@ import {
   TextInput,
   NumberInput,
   FileInput,
+  Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { storage, auth } from "@/Firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "./../globals.css";
-import Image from "next/image";
 
 interface InventoryItem {
   name: string;
@@ -152,6 +152,8 @@ export function Inventory({
                   <Image
                     src={item.imageURL}
                     alt={item.name}
+                    width={24}
+                    height={24}
                     className="w-24 h-24 object-cover rounded mr-4"
                   />
                 )}
