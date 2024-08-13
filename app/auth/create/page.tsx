@@ -15,7 +15,6 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { handleSignUp } from "./../../serverActions/authActions";
-import classes from "./../../components/Auth.module.css";
 import "./../../globals.css";
 
 export default function SignUp() {

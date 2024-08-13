@@ -35,10 +35,6 @@ export default function AuthForm() {
     }
   };
 
-  const navigateToSignUp = () => {
-    router.push("/auth/");
-  };
-
   return (
     <Container size={420} my={200}>
       <Text className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-green-100 mb-4 text-2xl text-center font-bold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl">

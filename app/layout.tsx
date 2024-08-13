@@ -1,10 +1,10 @@
-import '@mantine/core/styles.css';
+import "@mantine/core/styles.css";
 
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
+import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 
 export const metadata = {
-  title: 'Pantry Tracker',
-  description: 'I have followed setup instructions carefully',
+  title: "Pantry Tracker",
+  description: "Welcome to your pantry tracker!",
 };
 
 export default function RootLayout({
